@@ -317,7 +317,7 @@
   <div class="call-screen" id="callScreen">
     <div class="call-info">
       <p class="call-status" id="callStatus">Tocando...</p>
-      <img src="https://modelo.life/chamada.whatsapp.app/media/foto_perfil.jpeg" class="profile-img" alt="Foto de Perfil de Carolina">
+      <img src="https://conteudosites.s3.us-east-005.backblazeb2.com/chamada.whatsapp.app/foto_perfil.jpeg" class="profile-img" alt="Foto de Perfil de Carolina">
       <p class="caller-name" id="callerName">Carol Andrade</p>
       <p class="call-type">Chamada de Vídeo do WhatsApp</p>
     </div>
@@ -328,7 +328,7 @@
       
       <!-- Botão circular -->
       <button class="action-btn" id="acceptCallBtn" aria-label="Aceitar chamada de vídeo">
-        <img src="media/video_camera_icon.png" alt="Ícone de Câmera de Vídeo" class="icon-img">
+        <img src="https://conteudosites.s3.us-east-005.backblazeb2.com/chamada.whatsapp.app/video_camera_icon.png" alt="Ícone de Câmera de Vídeo" class="icon-img">
       </button>
       <!-- Texto abaixo do botão -->
       <p class="action-label" id="actionLabelText">Toque para Aceitar Chamada</p> <!-- Texto alterado -->
@@ -416,7 +416,7 @@
               stream.getTracks().forEach(track => track.stop());
               cameraPreviewElement.srcObject = null;
           }
-          window.location.href = "https://modelo.life/video.chamada2";
+          window.location.href = "https://video-chamada2.vercel.app";
         }, animationDuration);
       } else {
           console.log("Button is disabled, not performing action.");
@@ -429,3 +429,4 @@
 </body>
 
 </html>
+
