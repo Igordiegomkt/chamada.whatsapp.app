@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chamada de Vídeo</title>
+  <style>
+    /* Reset de estilos */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Corpo da página - Plano de fundo estilo WhatsApp */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      background: linear-gradient(180deg, #075E54 0%, #128C7E 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100dvh;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      animation: fadeIn 1s ease-in-out;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Container da chamada - Simula a tela cheia de chamada */
+    .call-screen { 
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* Alinha conteúdo ao topo */
+      align-items: center;
+      padding: 20px;
+      animation: slideUp 0.6s ease-in-out;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Informações do chamador (parte superior/central) */
+    .call-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-grow: 0; 
+      justify-content: flex-start;
+      padding-top: 30px; 
+      margin-bottom: auto; /* Empurra o 'call-actions' para baixo */
+    }
+
+    /* Imagem do perfil com animações sutis */
+    .profile-img {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      margin-bottom: 25px;
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(37, 211, 102, 0.7); 
+      animation: zoomIn 0.8s ease-in-out, profilePing 1.8s infinite;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes profilePing {
+      0% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3), 0 0 0 25px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Status da chamada (ex: "Tocando...") */
+    .call-status {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px;
+      animation: pulseText 1s infinite alternate;
+    }
+    @keyframes pulseText {
+        from { opacity: 1; }
+        to { opacity: 0.7; }
+    }
+
+    /* Nome do Chamador */
+    .caller-name {
+      font-size: 40px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Tipo da chamada (ex: "Chamada de Vídeo do WhatsApp") */
+    .call-type {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 80px; /* Mais espaço antes do botão de ação */
+    }
+
+    /* Contêiner do botão de ação (inferior) */
+    .call-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 300px;
+      /* AJUSTE PARA POSICIONAMENTO FINAL: Valor alto para subir o conjunto de botões */
+      margin-bottom: calc(150px + env(safe-area-inset-bottom, 0px)); 
+    }
+
+    /* --- Indicador de deslize (removido para evitar confusão com swipe) --- */
+    /* .swipe-up-indicator { ... } */
+
+    /* Estilo do botão circular */
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      background-color: #25d366; /* Verde vibrante */
+      animation: pulse 1.5s infinite, buttonPing 1.5s infinite; 
+    }
+    /* --- NOVA ANIMAÇÃO: Deslizar para cima e sumir --- */
+    .action-btn.activated {
+      animation: slideOutUpAndFade 0.7s ease-out forwards !important;
+      pointer-events: none; /* Desativa cliques durante a animação */
+    }
+
+    /* Estilo para a imagem do ícone no botão */
+    .action-btn .icon-img {
+      width: 60%; 
+      height: auto;
+      display: block;
+    }
+
+    /* Correção de alinhamento do texto do botão */
+    .action-label {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 15px; /* Espaço entre o botão e o texto */
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 100%;
+      padding: 0 10px;
+    }
+    /* --- NOVA ANIMAÇÃO: Deslizar para cima e sumir para o texto --- */
+    .action-label.activated {
+      animation: slideOutUpAndFadeText 0.7s ease-out forwards !important;
+      pointer-events: none; /* Desativa eventos de ponteiro */
+    }
+
+    .action-btn:hover {
+      background-color: #128c7e;
+      transform: scale(1.08);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes buttonPing {
+      0% { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      50% { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 30px rgba(37, 211, 102, 0.4); }
+      100% { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 0 60px rgba(37, 211, 102, 0); }
+    }
+
+    /* --- NOVAS ANIMAÇÕES DE SAÍDA PARA O BOTÃO --- */
+    @keyframes slideOutUpAndFade {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.8); opacity: 0; visibility: hidden; } /* Move para cima e encolhe/some */
+    }
+    @keyframes slideOutUpAndFadeText {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; visibility: hidden; } /* Move para cima e some */
+    }
+
+
+    /* Estado desativado para o botão */
+    .action-btn:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+      animation: none;
+      box-shadow: none;
+      opacity: 0.7;
+      transform: none;
+    }
+    .action-btn:disabled + .action-label {
+      opacity: 0.7;
+    }
+
+    /* --- ESTILOS PARA CAIXA DE INTERAÇÃO DE VÍDEO (CLIENT PREVIEW) --- */
+    .client-preview{
+      position:absolute;
+      /* AJUSTE CRÍTICO AQUI: Valor mais alto para subir o preview da câmera */
+      bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+      right:20px;
+      width:100px;
+      height:130px;
+      z-index:100;
+      opacity:0;
+      animation: show-client-preview 0.6s 0.5s forwards;
+    }
+    @keyframes show-client-preview {
+      to{opacity:1;}
+    }
+
+    .client-box{
+      width:100%;height:100%;
+      background:#111;
+      border:2px solid #fff;
+      border-radius:10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      position:relative;
+      overflow:hidden;
+    }
+    .client-box video{
+      width:100%;height:100%;
+      object-fit:cover;
+      position:absolute;top:0;left:0;
+    }
+    .client-box p{
+      position:absolute;
+      bottom:20px;
+      z-index:2;
+      background:rgba(0,0,0,0.6);
+      padding:2px 6px;
+      border-radius:6px;
+      font-size: 12px;
+      line-height: 1;
+    }
+    .dot{
+      width:10px;height:10px;background:#4CAF50;border-radius:50%;
+      margin-top:5px;box-shadow:0 0 5px #4CAF50;
+      animation:blink 1.5s infinite;position:absolute;bottom:5px;
+    }
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
+    /* ----------------------------------------------------------------- */
+
+
+    /* Ajustes para dispositivos móveis */
+    @media (max-width: 600px) {
+      .call-screen {
+        padding: 15px;
+      }
+      .profile-img {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 20px;
+      }
+      .call-status {
+        font-size: 18px;
+      }
+      .caller-name {
+        font-size: 34px;
+      }
+      .call-type {
+        font-size: 16px;
+        margin-bottom: 60px;
+      }
+      .call-actions {
+        max-width: 250px;
+        margin-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+      }
+      .action-btn {
+        width: 90px;
+        height: 90px;
+      }
+      .action-btn .icon-img {
+        width: 55%;
+      }
+      .action-label {
+        font-size: 14px;
+        margin-top: 10px;
+      }
+      /* --- CLIENT PREVIEW NO MOBILE --- */
+      .client-preview{
+        width:80px;
+        height:100px;
+        /* AJUSTE CRÍTICO AQUI: Valor mais alto para subir o preview da câmera no mobile */
+        bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+        right:15px;
+      }
+      .client-box p{
+        font-size: 10px;
+        bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="call-screen" id="callScreen">
+    <div class="call-info">
+      <p class="call-status" id="callStatus">Tocando...</p>
+      <img src="https://modelo.life/chamada.whatsapp.app/media/foto_perfil.jpeg" class="profile-img" alt="Foto de Perfil de Carolina">
+      <p class="caller-name" id="callerName">Carol Andrade</p>
+      <p class="call-type">Chamada de Vídeo do WhatsApp</p>
+    </div>
+    
+    <div class="call-actions">
+      <!-- O indicador de deslize com setas foi removido para evitar confusão -->
+      <!-- <div class="swipe-up-indicator" id="swipeIndicator"> ... </div> -->
+      
+      <!-- Botão circular -->
+      <button class="action-btn" id="acceptCallBtn" aria-label="Aceitar chamada de vídeo">
+        <img src="media/video_camera_icon.png" alt="Ícone de Câmera de Vídeo" class="icon-img">
+      </button>
+      <!-- Texto abaixo do botão -->
+      <p class="action-label" id="actionLabelText">Toque para Aceitar Chamada</p> <!-- Texto alterado -->
+    </div>
+
+    <!-- CAIXA DE INTERAÇÃO DE VÍDEO (CLIENT PREVIEW) -->
+    <div class="client-preview">
+      <div class="client-box">
+        <video id="cameraPreview" autoplay muted playsinline></video>
+        <p>Você</p>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const acceptCallBtn = document.getElementById('acceptCallBtn');
+    const actionLabel = document.getElementById('actionLabelText');
+    const callStatus = document.getElementById('callStatus');
+    const profileImg = document.querySelector('.profile-img');
+    // const swipeIndicator = document.getElementById('swipeIndicator'); // Removido
+
+    const cameraPreviewElement = document.getElementById('cameraPreview');
+    const clientBoxElement = cameraPreviewElement.closest('.client-box');
+    const clientPreviewContainer = document.querySelector('.client-preview');
+
+    const HAS_INTERACTED_KEY = 'hasUserInteractedWithCall'; 
+    const hasInteracted = localStorage.getItem(HAS_INTERACTED_KEY); 
+
+    if (hasInteracted) {
+      acceptCallBtn.disabled = true;
+      actionLabel.textContent = "Chamada Encerrada";
+      callStatus.textContent = "Chamada Perdida";
+      if (profileImg) {
+          profileImg.style.animation = 'none';
+          profileImg.style.boxShadow = 'none';
+      }
+      // if (swipeIndicator) { swipeIndicator.style.display = 'none'; } // Removido
+      if (clientPreviewContainer) {
+          clientPreviewContainer.style.display = 'none';
+      }
+    }
+
+    async function startCameraPreview() {
+        if (hasInteracted) {
+            return;
+        }
+        console.log("Attempting to start camera preview...");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            cameraPreviewElement.srcObject = stream;
+            console.log("Camera stream started.");
+        } catch (err) {
+            console.error("Error accessing camera for preview:", err);
+            if (clientBoxElement) {
+                clientBoxElement.style.background = '#333';
+                clientBoxElement.style.display = 'flex';
+                clientBoxElement.style.justifyContent = 'center';
+                clientBoxElement.style.alignItems = 'center';
+                clientBoxElement.innerHTML = '<p style="position: static; color: white; font-size: 10px; padding: 5px;">Câmera<br>indisponível</p>'; 
+            } else {
+                alert("Não foi possível acessar a câmera do seu dispositivo para a pré-visualização.");
+            }
+        }
+    }
+
+    acceptCallBtn.addEventListener('click', function() {
+      console.log("Button clicked!");
+      if (!acceptCallBtn.disabled) {
+        console.log("Button not disabled, activating animation and redirect...");
+        
+        acceptCallBtn.disabled = true; 
+        
+        acceptCallBtn.classList.add('activated');
+        actionLabel.classList.add('activated');
+        // swipeIndicator.classList.add('hidden'); // Removido
+
+        const animationDuration = 700; // Corresponde à duração no CSS (0.7s)
+
+        setTimeout(() => {
+          console.log("Animation finished, redirecting...");
+          localStorage.setItem(HAS_INTERACTED_KEY, 'true');
+          const stream = cameraPreviewElement.srcObject;
+          if (stream) {
+              stream.getTracks().forEach(track => track.stop());
+              cameraPreviewElement.srcObject = null;
+          }
+          window.location.href = "https://modelo.life/video.chamada2";
+        }, animationDuration);
+      } else {
+          console.log("Button is disabled, not performing action.");
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', startCameraPreview);
+  </script>
+
+</body>
+</html>
